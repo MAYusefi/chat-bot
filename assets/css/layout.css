@@ -1,0 +1,710 @@
+/* ============================================================
+   layout.css — RTL Professional Chatbot Layout
+   Glassmorphism · CSS Grid · Responsive
+   ============================================================ */
+
+/* ----------------------------------------------------------
+   1. Background Decorative Blur
+   ---------------------------------------------------------- */
+.background-blur {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 15% 12%, rgba(59, 130, 246, 0.16), transparent 28%),
+    radial-gradient(circle at 88% 18%, rgba(16, 185, 129, 0.14), transparent 24%),
+    radial-gradient(circle at 75% 82%, rgba(147, 51, 234, 0.12), transparent 26%),
+    radial-gradient(circle at 40% 60%, rgba(59, 130, 246, 0.06), transparent 35%);
+}
+
+/* ----------------------------------------------------------
+   2. App Shell — 2-Column CSS Grid
+   ---------------------------------------------------------- */
+.app-shell {
+  position: relative;
+  z-index: 1;
+  direction: rtl;
+  width: min(1320px, 96vw);
+  max-width: 1320px;
+  height: min(92vh, 980px);
+  margin: 4vh auto;
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 18px;
+}
+
+/* ----------------------------------------------------------
+   3. Sidebar — Glassmorphism Card
+   ---------------------------------------------------------- */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  overflow: hidden;
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.35s ease;
+}
+
+/* ----------------------------------------------------------
+   4. Sidebar Header
+   ---------------------------------------------------------- */
+.sidebar-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  gap: 12px;
+}
+
+.sidebar-header .hamburger-btn {
+  display: none;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  transition: background 0.15s ease;
+}
+
+.sidebar-header .hamburger-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Brand Block (existing) */
+.brand-block {
+  margin-bottom: 16px;
+}
+
+.eyebrow {
+  color: var(--primary);
+  font-size: 12px;
+  margin: 0 0 6px;
+  letter-spacing: 0.3px;
+}
+
+.brand-block h1 {
+  margin: 0 0 8px;
+  font-size: 22px;
+  line-height: 1.35;
+}
+
+/* ----------------------------------------------------------
+   5. Conversation List
+   ---------------------------------------------------------- */
+.conversation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  padding-left: 4px;
+  margin-left: -4px;
+}
+
+/* Custom Scrollbar — Conversation List */
+.conversation-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+.conversation-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.conversation-list::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.22);
+  border-radius: 10px;
+}
+
+.conversation-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.38);
+}
+
+/* Firefox scrollbar */
+.conversation-list {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.22) transparent;
+}
+
+/* ----------------------------------------------------------
+   6. Conversation Item — Glass Card
+   ---------------------------------------------------------- */
+.conversation-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  min-height: 46px;
+}
+
+.conversation-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--card-border);
+}
+
+.conversation-item:active {
+  transform: scale(0.985);
+  background: rgba(59, 130, 246, 0.08);
+}
+
+.conversation-item-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text);
+}
+
+.conversation-item-date {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ----------------------------------------------------------
+   7. Conversation Item — Active State
+   ---------------------------------------------------------- */
+.conversation-item.active {
+  background: rgba(59, 130, 246, 0.12);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.18);
+}
+
+.conversation-item.active .conversation-item-text {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* ----------------------------------------------------------
+   8. Conversation Item Actions (shown on hover)
+   ---------------------------------------------------------- */
+.conversation-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease, visibility 0.15s ease;
+  flex-shrink: 0;
+}
+
+.conversation-item:hover .conversation-item-actions {
+  opacity: 1;
+  visibility: visible;
+}
+
+.conversation-item-actions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-muted);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.14s ease;
+}
+
+.conversation-item-actions button:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: var(--text);
+}
+
+.conversation-item-actions button.danger:hover {
+  background: rgba(239, 68, 68, 0.18);
+  color: var(--danger);
+}
+
+/* ----------------------------------------------------------
+   9. Sidebar Bottom
+   ---------------------------------------------------------- */
+.sidebar-bottom {
+  margin-top: auto;
+  border-top: 1px solid var(--card-border);
+  padding-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sidebar-bottom .sidebar-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ----------------------------------------------------------
+   10. Sidebar Actions — 2 Column Grid
+   ---------------------------------------------------------- */
+.sidebar-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+/* ----------------------------------------------------------
+   11. Chat Panel — 3-Row CSS Grid
+   ---------------------------------------------------------- */
+.chat-panel {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  overflow: hidden;
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  position: relative;
+}
+
+/* ----------------------------------------------------------
+   12. Chat Header
+   ---------------------------------------------------------- */
+.chat-header {
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--card-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.chat-header h2 {
+  margin: 0 0 4px;
+  font-size: 20px;
+}
+
+.chat-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Mobile hamburger inside chat header */
+.chat-header .mobile-menu-btn {
+  display: none;
+  border: none;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  font-size: 18px;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease;
+}
+
+.chat-header .mobile-menu-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* ----------------------------------------------------------
+   13. Messages Area
+   ---------------------------------------------------------- */
+.messages {
+  overflow-y: auto;
+  padding: 20px;
+  position: relative;
+}
+
+/* Custom Scrollbar — Messages */
+.messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.messages::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: 10px;
+}
+
+.messages::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.36);
+}
+
+.messages {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.2) transparent;
+}
+
+/* ----------------------------------------------------------
+   14. Composer
+   ---------------------------------------------------------- */
+.composer {
+  padding: 14px 20px 18px;
+  border-top: 1px solid var(--card-border);
+  background: rgba(15, 23, 42, 0.18);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+html[data-theme="light"] .composer {
+  background: rgba(255, 255, 255, 0.45);
+}
+
+/* ----------------------------------------------------------
+   15. Composer Textarea
+   ---------------------------------------------------------- */
+.composer textarea {
+  width: 100%;
+  resize: none;
+  padding: 14px 16px;
+  min-height: 56px;
+  max-height: 170px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--card-border);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.7;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.composer textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+.composer textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* ----------------------------------------------------------
+   16. Composer Footer
+   ---------------------------------------------------------- */
+.composer-footer {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.char-count {
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  color: var(--text-muted);
+  user-select: none;
+}
+
+.char-count.warning {
+  color: #f59e0b;
+}
+
+.char-count.danger {
+  color: var(--danger);
+}
+
+/* ----------------------------------------------------------
+   17. Scroll to Bottom Button
+   ---------------------------------------------------------- */
+.scroll-to-bottom {
+  position: sticky;
+  bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin: 0 auto;
+  border: 1px solid var(--card-border);
+  border-radius: 50%;
+  background: var(--card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--text);
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px) scale(0.9);
+  transition: opacity 0.25s ease,
+              visibility 0.25s ease,
+              transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              background 0.15s ease;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.scroll-to-bottom.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.scroll-to-bottom:hover {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+  box-shadow: 0 6px 22px rgba(59, 130, 246, 0.3);
+}
+
+.scroll-to-bottom:active {
+  transform: translateY(0) scale(0.93);
+}
+
+/* ----------------------------------------------------------
+   20. Prompt Section
+   ---------------------------------------------------------- */
+.prompt-section {
+  margin-top: 4px;
+  overflow: auto;
+  min-height: 0;
+  flex: 1;
+}
+
+.prompt-section::-webkit-scrollbar {
+  width: 4px;
+}
+
+.prompt-section::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.prompt-section::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: 10px;
+}
+
+.prompt-section {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.2) transparent;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.prompt-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ----------------------------------------------------------
+   21. Search Box
+   ---------------------------------------------------------- */
+.search-box {
+  position: relative;
+  margin-bottom: 14px;
+}
+
+.search-box label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.search-box input {
+  width: 100%;
+  padding: 10px 14px;
+  padding-left: 36px;
+}
+
+.search-box .search-clear-btn {
+  position: absolute;
+  left: 10px;
+  bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease, visibility 0.15s ease, background 0.12s ease;
+}
+
+.search-box .search-clear-btn.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.search-box .search-clear-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text);
+}
+
+/* ----------------------------------------------------------
+   Sidebar Footer (existing compat)
+   ---------------------------------------------------------- */
+.sidebar-footer {
+  margin-top: auto;
+  border-top: 1px solid var(--card-border);
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ----------------------------------------------------------
+   18. Sidebar Overlay (Mobile)
+   ---------------------------------------------------------- */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.sidebar-overlay.visible {
+  opacity: 1;
+}
+
+/* ----------------------------------------------------------
+   18. Mobile Responsive — max-width 900px
+   ---------------------------------------------------------- */
+@media (max-width: 900px) {
+  .app-shell {
+    width: 100%;
+    max-width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    margin: 0;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    gap: 0;
+    border-radius: 0;
+  }
+
+  /* Sidebar — Fixed Overlay, slide-in from right (RTL) */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: min(320px, 85vw);
+    height: 100vh;
+    height: 100dvh;
+    z-index: 100;
+    border-radius: 0 0 0 20px;
+    margin: 0;
+    transform: translateX(100%);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.3s ease;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .sidebar-overlay {
+    display: block;
+  }
+
+  /* Show hamburger / mobile menu button */
+  .sidebar-header .hamburger-btn {
+    display: flex;
+  }
+
+  .chat-header .mobile-menu-btn {
+    display: flex;
+  }
+
+  /* Chat panel fills the viewport */
+  .chat-panel {
+    border-radius: 0;
+    width: 100%;
+    min-height: 0;
+  }
+
+  .chat-header {
+    padding: 14px 16px 12px;
+  }
+
+  .messages {
+    padding: 16px;
+  }
+
+  .composer {
+    padding: 12px 16px 16px;
+  }
+
+  .composer textarea {
+    min-height: 50px;
+  }
+}
+
+/* ----------------------------------------------------------
+   Extra-small screens
+   ---------------------------------------------------------- */
+@media (max-width: 480px) {
+  .sidebar {
+    width: 100vw;
+    border-radius: 0;
+  }
+
+  .sidebar-actions {
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .chat-header h2 {
+    font-size: 17px;
+  }
+
+  .composer textarea {
+    padding: 12px;
+    font-size: 14px;
+  }
+}

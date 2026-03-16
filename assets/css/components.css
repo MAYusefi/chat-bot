@@ -1,0 +1,857 @@
+/* ============================================================
+   components.css  –  Professional RTL Glassmorphism Chatbot
+   ============================================================ */
+
+/* ──────────────────────────────────────────────────────────────
+   1. BUTTONS
+   ────────────────────────────────────────────────────────────── */
+
+.btn {
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 1;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Primary – solid color with glow */
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--primary-hover);
+  box-shadow: 0 0 18px rgba(59, 130, 246, 0.35),
+              0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+/* Soft – glass background with border */
+.btn-soft {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--card-border);
+  color: var(--text);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.btn-soft:hover:not(:disabled) {
+  border-color: rgba(59, 130, 246, 0.45);
+  background: rgba(59, 130, 246, 0.12);
+}
+
+.btn-soft:active:not(:disabled) {
+  background: rgba(59, 130, 246, 0.18);
+}
+
+/* Icon-only – small round button */
+.btn-icon {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 13px;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--card-border);
+  color: var(--text-muted);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.btn-icon:hover:not(:disabled) {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(148, 163, 184, 0.35);
+}
+
+/* ──────────────────────────────────────────────────────────────
+   2. PROMPT CHIPS
+   ────────────────────────────────────────────────────────────── */
+
+.prompt-chip {
+  width: 100%;
+  text-align: right;
+  border: 1px solid rgba(59, 130, 246, 0.22);
+  background: var(--chip);
+  color: var(--text);
+  border-radius: 12px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1.6;
+  transition: border-color 0.2s ease,
+              background 0.2s ease,
+              box-shadow 0.2s ease;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.prompt-chip:hover {
+  border-color: rgba(59, 130, 246, 0.55);
+  background: rgba(59, 130, 246, 0.18);
+  box-shadow: 0 0 14px rgba(59, 130, 246, 0.12);
+}
+
+.prompt-chip:active {
+  transform: scale(0.985);
+}
+
+/* ──────────────────────────────────────────────────────────────
+   3. MESSAGE ROWS
+   ────────────────────────────────────────────────────────────── */
+
+.msg-row {
+  display: flex;
+  margin-bottom: 16px;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.msg-row.user {
+  justify-content: flex-start;
+}
+
+.msg-row.assistant,
+.msg-row.system {
+  justify-content: flex-end;
+}
+
+/* Avatar */
+.msg-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--card-border);
+}
+
+.msg-row.user .msg-avatar {
+  background: rgba(59, 130, 246, 0.22);
+  color: #60a5fa;
+}
+
+.msg-row.assistant .msg-avatar,
+.msg-row.system .msg-avatar {
+  background: rgba(16, 185, 129, 0.22);
+  color: #34d399;
+}
+
+/* Message Card */
+.msg-card {
+  max-width: min(84%, 790px);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  position: relative;
+}
+
+.msg-row.user .msg-card {
+  background: rgba(37, 99, 235, 0.2);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+.msg-row.system .msg-card {
+  background: rgba(234, 179, 8, 0.12);
+  border-color: rgba(234, 179, 8, 0.2);
+}
+
+.msg-card.msg-error {
+  border-color: rgba(239, 68, 68, 0.5);
+  background: rgba(239, 68, 68, 0.08);
+}
+
+/* Message Content */
+.msg-content {
+  line-height: 1.85;
+  font-size: 14px;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Markdown: paragraphs */
+.msg-content p {
+  margin: 0 0 10px;
+}
+
+.msg-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* Markdown: code blocks */
+.msg-content pre {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid var(--card-border);
+  background: rgba(0, 0, 0, 0.3);
+  padding: 14px 16px;
+  margin: 10px 0;
+  direction: ltr;
+  text-align: left;
+}
+
+.msg-content code {
+  font-family: Consolas, "Fira Code", "Courier New", monospace;
+  font-size: 13px;
+}
+
+.msg-content :not(pre) > code {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  padding: 1px 6px;
+  font-size: 12.5px;
+}
+
+/* Markdown: lists */
+.msg-content ul,
+.msg-content ol {
+  margin: 8px 0;
+  padding-inline-start: 22px;
+}
+
+.msg-content li {
+  margin-bottom: 4px;
+  line-height: 1.75;
+}
+
+.msg-content li::marker {
+  color: var(--text-muted);
+}
+
+/* Markdown: tables */
+.msg-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0;
+  font-size: 13px;
+  direction: rtl;
+}
+
+.msg-content th,
+.msg-content td {
+  border: 1px solid var(--card-border);
+  padding: 8px 12px;
+  text-align: right;
+}
+
+.msg-content th {
+  background: rgba(255, 255, 255, 0.06);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.msg-content tr:nth-child(even) td {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* Markdown: blockquotes */
+.msg-content blockquote {
+  margin: 10px 0;
+  padding: 10px 14px;
+  border-right: 3px solid var(--primary);
+  border-left: none;
+  background: rgba(59, 130, 246, 0.06);
+  border-radius: 0 8px 8px 0;
+  color: var(--text-muted);
+}
+
+/* Markdown: links */
+.msg-content a {
+  color: var(--primary);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(59, 130, 246, 0.3);
+  transition: border-color 0.2s;
+}
+
+.msg-content a:hover {
+  border-bottom-color: var(--primary);
+}
+
+/* Markdown: horizontal rule */
+.msg-content hr {
+  border: none;
+  height: 1px;
+  background: var(--card-border);
+  margin: 14px 0;
+}
+
+/* Markdown: images */
+.msg-content img {
+  max-width: 100%;
+  border-radius: 10px;
+  margin: 8px 0;
+}
+
+/* Meta line */
+.msg-meta {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* Actions */
+.msg-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.msg-action-btn {
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 11px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: color 0.2s ease, background 0.2s ease;
+  line-height: 1;
+}
+
+.msg-action-btn:hover {
+  color: var(--primary);
+  background: rgba(59, 130, 246, 0.1);
+}
+
+/* Filtered */
+.msg-row.filtered-out {
+  display: none;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   4. DATE SEPARATOR
+   ────────────────────────────────────────────────────────────── */
+
+.date-separator {
+  display: flex;
+  align-items: center;
+  margin: 16px 0;
+  gap: 12px;
+}
+
+.date-separator::before,
+.date-separator::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--card-border);
+}
+
+.date-separator span {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   5. TYPING INDICATOR
+   ────────────────────────────────────────────────────────────── */
+
+.typing-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.typing-dots span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  animation: typingPulse 1.2s infinite ease-in-out;
+}
+
+.typing-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typingPulse {
+  0%,
+  80%,
+  100% {
+    transform: scale(0.75);
+    opacity: 0.45;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   6. EMPTY STATE
+   ────────────────────────────────────────────────────────────── */
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 80px 24px;
+  user-select: none;
+  min-height: 300px;
+}
+
+.empty-state .empty-icon {
+  font-size: 72px;
+  color: var(--primary);
+  margin-bottom: 20px;
+  opacity: 0.7;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.empty-state .empty-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 12px;
+}
+
+.empty-state .empty-description {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin: 0;
+  max-width: 380px;
+  line-height: 1.8;
+}
+
+.empty-prompts {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  max-width: 520px;
+  width: 100%;
+  margin-top: 28px;
+}
+
+/* Welcome message styling */
+.welcome-message {
+  text-align: center;
+  padding: 40px 24px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(16, 185, 129, 0.06));
+  border-radius: 20px;
+  border: 1px solid var(--card-border);
+  margin: 20px;
+}
+
+.welcome-message h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 12px;
+}
+
+.welcome-message p {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.7;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   7. SETTINGS DIALOG
+   ────────────────────────────────────────────────────────────── */
+
+.settings-dialog {
+  min-width: 480px;
+  width: min(94vw, 500px);
+  border: 1px solid var(--card-border);
+  border-radius: 24px;
+  background: var(--card);
+  color: var(--text);
+  padding: 0;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 24px 64px rgba(59, 130, 246, 0.15), 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.settings-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.settings-dialog form {
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.settings-dialog h3 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.settings-dialog h3 i {
+  color: var(--primary);
+}
+
+.settings-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.settings-dialog label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.settings-dialog input,
+.settings-dialog select {
+  padding: 14px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--card-border);
+  transition: all 0.2s ease;
+}
+
+html[data-theme='light'] .settings-dialog input,
+html[data-theme='light'] .settings-dialog select {
+  background: rgba(59, 130, 246, 0.04);
+}
+
+.settings-dialog input:focus,
+.settings-dialog select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.settings-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  opacity: 0.8;
+}
+
+.settings-divider {
+  height: 1px;
+  background: var(--card-border);
+  margin: 4px 0;
+}
+
+.settings-info {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.settings-info p {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 0;
+}
+
+.settings-info i {
+  color: var(--primary);
+  font-size: 11px;
+}
+
+.dialog-actions {
+  margin-top: 8px;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   8. CUSTOM CONFIRM DIALOG
+   ────────────────────────────────────────────────────────────── */
+
+.confirm-dialog {
+  min-width: 360px;
+  width: min(92vw, 420px);
+  border: 1px solid var(--card-border);
+  border-radius: 18px;
+  background: var(--bg-soft);
+  color: var(--text);
+  padding: 24px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4),
+              0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.confirm-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.confirm-dialog .confirm-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+
+.confirm-dialog .confirm-message {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin: 0 0 20px;
+  line-height: 1.7;
+}
+
+.confirm-dialog .dialog-actions {
+  justify-content: flex-start;
+}
+
+/* Danger variant */
+.btn-danger {
+  background: var(--danger);
+  color: #fff;
+  border-color: transparent;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #dc2626;
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.3);
+}
+
+/* ──────────────────────────────────────────────────────────────
+   9. TOAST CONTAINER & TOASTS
+   ────────────────────────────────────────────────────────────── */
+
+.toast-container {
+  position: fixed;
+  left: 18px;
+  bottom: 18px;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.toast {
+  min-width: 220px;
+  max-width: min(90vw, 420px);
+  border-radius: 12px;
+  padding: 12px 16px;
+  border: 1px solid var(--card-border);
+  background: var(--bg-soft);
+  color: var(--text);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3),
+              0 0 0 1px rgba(255, 255, 255, 0.04);
+  font-size: 13px;
+  line-height: 1.6;
+  pointer-events: auto;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.toast.success {
+  border-right: 3px solid var(--success);
+}
+
+.toast.error {
+  border-right: 3px solid var(--danger);
+}
+
+.toast.warning {
+  border-right: 3px solid #f59e0b;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   10. FEEDBACK BUTTONS
+   ────────────────────────────────────────────────────────────── */
+
+.feedback-btn {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.feedback-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--text);
+}
+
+.feedback-btn.active.like {
+  background: rgba(16, 185, 129, 0.18);
+  border-color: rgba(16, 185, 129, 0.4);
+  color: #34d399;
+}
+
+.feedback-btn.active.dislike {
+  background: rgba(239, 68, 68, 0.18);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #f87171;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   11. BADGE
+   ────────────────────────────────────────────────────────────── */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--card-border);
+  color: var(--text-muted);
+  line-height: 1.5;
+  white-space: nowrap;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* ──────────────────────────────────────────────────────────────
+   12. SEARCH CLEAR BUTTON
+   ────────────────────────────────────────────────────────────── */
+
+.search-clear {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-muted);
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.search-clear:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: var(--text);
+}
+
+.has-value ~ .search-clear {
+  display: inline-flex;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   STATUS LINE (existing utility)
+   ────────────────────────────────────────────────────────────── */
+
+.status-line {
+  font-size: 13px;
+  transition: color 0.2s ease;
+}
+
+.status-line[data-kind="success"] {
+  color: var(--success);
+}
+
+.status-line[data-kind="warning"] {
+  color: #f59e0b;
+}
+
+.status-line[data-kind="error"] {
+  color: var(--danger);
+}
+
+/* ──────────────────────────────────────────────────────────────
+   RESPONSIVE ADJUSTMENTS
+   ────────────────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .settings-dialog {
+    min-width: unset;
+    width: 96vw;
+    border-radius: 16px;
+  }
+
+  .settings-dialog form {
+    padding: 18px;
+  }
+
+  .confirm-dialog {
+    min-width: unset;
+    width: 92vw;
+  }
+
+  .msg-card {
+    max-width: 92%;
+  }
+
+  .empty-prompts {
+    grid-template-columns: 1fr;
+  }
+
+  .toast-container {
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+  }
+
+  .toast {
+    max-width: 100%;
+  }
+}

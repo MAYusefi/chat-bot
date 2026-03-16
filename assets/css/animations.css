@@ -1,0 +1,264 @@
+/* ==========================================================================
+   animations.css — Professional Chatbot Animations
+   Performance-optimized: uses transform & opacity exclusively where possible.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Toast Notifications
+   -------------------------------------------------------------------------- */
+
+.toast {
+  animation: toast-slide-in 0.3s ease-out both;
+}
+
+.toast.removing {
+  animation: toast-slide-out 0.25s ease-in both;
+}
+
+@keyframes toast-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes toast-slide-out {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   2. Typing Dots Pulse
+   -------------------------------------------------------------------------- */
+
+@keyframes pulse {
+  0%,
+  80%,
+  100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.typing-dots span {
+  animation: pulse 1.2s infinite ease-in-out;
+}
+
+.typing-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* --------------------------------------------------------------------------
+   3. Message Entrance
+   -------------------------------------------------------------------------- */
+
+.msg-row {
+  animation: msg-enter 0.3s ease-out both;
+}
+
+@keyframes msg-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4. Scroll-to-Bottom Button
+   -------------------------------------------------------------------------- */
+
+.scroll-to-bottom {
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.scroll-to-bottom.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scroll-to-bottom:not(.visible) {
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   5. Sidebar Slide (Mobile)
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 980px) {
+  .sidebar {
+    transition: transform 0.3s ease;
+  }
+
+  .sidebar.closed {
+    transform: translateX(100%); /* RTL: slides off to the right */
+  }
+}
+
+.sidebar-overlay {
+  transition: opacity 0.3s ease;
+}
+
+.sidebar-overlay:not(.visible) {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sidebar-overlay.visible {
+  opacity: 1;
+}
+
+/* --------------------------------------------------------------------------
+   6. Dialog Animations
+   -------------------------------------------------------------------------- */
+
+dialog[open] {
+  animation: dialog-open 0.2s ease-out both;
+}
+
+dialog::backdrop {
+  animation: backdrop-fade-in 0.2s ease-out both;
+}
+
+@keyframes dialog-open {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes backdrop-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   7. Conversation Item Hover
+   -------------------------------------------------------------------------- */
+
+.prompt-chip,
+.btn-soft {
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+/* --------------------------------------------------------------------------
+   8. Button Press Effect
+   -------------------------------------------------------------------------- */
+
+.btn {
+  transition: background-color 0.16s ease, border-color 0.16s ease,
+              transform 0.1s ease, box-shadow 0.16s ease;
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+/* --------------------------------------------------------------------------
+   9. Shimmer / Skeleton Loading
+   -------------------------------------------------------------------------- */
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 25%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.04) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+  border-radius: 8px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   10. Focus Ring
+   -------------------------------------------------------------------------- */
+
+*:focus-visible {
+  outline: 2px solid var(--primary, #3b82f6);
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   11. Fade In / Out Utilities
+   -------------------------------------------------------------------------- */
+
+.fade-in {
+  animation: fade-in 0.2s ease both;
+}
+
+.fade-out {
+  animation: fade-out 0.2s ease both;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Reduced Motion: respect user preference
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

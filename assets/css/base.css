@@ -1,0 +1,295 @@
+/* ═══════════════════════════════════════════════════════════════
+   base.css — Professional Glassmorphism Chatbot UI
+   Language: RTL (Persian / Dari)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Google Fonts ────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+/* ── Dark Theme (default) ────────────────────────────────────── */
+:root {
+  /* Backgrounds */
+  --bg:              #0b1220;
+  --bg-soft:         #111b2f;
+
+  /* Glass card */
+  --card:            rgba(15, 23, 42, 0.75);
+  --card-border:     rgba(148, 163, 184, 0.2);
+  --card-hover:      rgba(15, 23, 42, 0.85);
+
+  /* Typography */
+  --text:            #e2e8f0;
+  --text-muted:      #a0aec0;  /* WCAG AA ≥ 4.5:1 on #0b1220 */
+
+  /* Brand / Primary */
+  --primary:         #3b82f6;
+  --primary-hover:   #2563eb;
+  --primary-glow:    rgba(59, 130, 246, 0.35);
+
+  /* Semantic */
+  --success:         #10b981;
+  --danger:          #ef4444;
+  --warning:         #f59e0b;
+
+  /* Misc */
+  --chip:            rgba(59, 130, 246, 0.15);
+  --shadow:          0 24px 60px rgba(2, 6, 23, 0.5);
+
+  /* Glass effect */
+  --glass-blur:      12px;
+  --glass-border:    1px solid rgba(148, 163, 184, 0.15);
+
+  /* Scrollbar */
+  --scrollbar-thumb: rgba(148, 163, 184, 0.28);
+  --scrollbar-track: rgba(15, 23, 42, 0.4);
+}
+
+/* ── Light Theme ─────────────────────────────────────────────── */
+html[data-theme='light'] {
+  /* Backgrounds - Modern light gradient */
+  --bg:              #f0f4ff;
+  --bg-soft:         #ffffff;
+
+  /* Glass card - Enhanced transparency */
+  --card:            rgba(255, 255, 255, 0.92);
+  --card-border:     rgba(59, 130, 246, 0.15);
+  --card-hover:      rgba(255, 255, 255, 0.98);
+
+  /* Typography */
+  --text:            #1e293b;
+  --text-muted:      #64748b;
+
+  /* Brand / Primary - Vibrant blue */
+  --primary:         #3b82f6;
+  --primary-hover:   #2563eb;
+  --primary-glow:    rgba(59, 130, 246, 0.3);
+
+  /* Semantic */
+  --success:         #10b981;
+  --danger:          #ef4444;
+  --warning:         #f59e0b;
+
+  /* Misc */
+  --chip:            rgba(59, 130, 246, 0.12);
+  --shadow:          0 8px 32px rgba(59, 130, 246, 0.12), 0 2px 8px rgba(0, 0, 0, 0.04);
+
+  /* Glass effect */
+  --glass-blur:      16px;
+  --glass-border:    1px solid rgba(59, 130, 246, 0.12);
+
+  /* Scrollbar */
+  --scrollbar-thumb: rgba(59, 130, 246, 0.25);
+  --scrollbar-track: rgba(59, 130, 246, 0.05);
+}
+
+/* ── Reset ───────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+}
+
+/* ── Body ────────────────────────────────────────────────────── */
+body {
+  font-family: 'Vazirmatn', 'Segoe UI', Tahoma, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text);
+  background:
+    radial-gradient(ellipse at 8% 10%,  rgba(29, 78, 216, 0.24), transparent 24%),
+    radial-gradient(ellipse at 90% 20%, rgba(16, 185, 129, 0.15), transparent 20%),
+    radial-gradient(ellipse at 70% 90%, rgba(147, 51, 234, 0.13), transparent 25%),
+    radial-gradient(ellipse at 50% 50%, rgba(15, 23, 42, 0.06), transparent 60%),
+    var(--bg);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* ── Form Element Inheritance ────────────────────────────────── */
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+}
+
+/* ── Input / Textarea / Select — Glassmorphism Base ──────────── */
+textarea,
+input,
+select {
+  outline: none;
+  border: 1px solid var(--card-border);
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 10px 14px;
+  color: var(--text);
+  backdrop-filter: blur(calc(var(--glass-blur) / 2));
+  -webkit-backdrop-filter: blur(calc(var(--glass-blur) / 2));
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+html[data-theme='light'] textarea,
+html[data-theme='light'] input,
+html[data-theme='light'] select {
+  background: rgba(255, 255, 255, 0.55);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+input:hover,
+textarea:hover,
+select:hover {
+  border-color: rgba(59, 130, 246, 0.35);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--primary);
+  box-shadow:
+    0 0 0 3px var(--primary-glow),
+    0 0 20px -4px var(--primary-glow);
+}
+
+/* ── Selection ───────────────────────────────────────────────── */
+::selection {
+  background: rgba(59, 130, 246, 0.35);
+  color: #fff;
+}
+
+::-moz-selection {
+  background: rgba(59, 130, 246, 0.35);
+  color: #fff;
+}
+
+html[data-theme='light'] ::selection {
+  background: rgba(37, 99, 235, 0.3);
+  color: #0f172a;
+}
+
+html[data-theme='light'] ::-moz-selection {
+  background: rgba(37, 99, 235, 0.3);
+  color: #0f172a;
+}
+
+/* ── Custom Scrollbar (WebKit) ───────────────────────────────── */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.45);
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+/* ── Utility: .muted ─────────────────────────────────────────── */
+.muted {
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* ── Utility: .card (Glass Effect) ───────────────────────────── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 18px;
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  box-shadow: var(--shadow);
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.card:hover {
+  background: var(--card-hover);
+}
+
+/* Gradient border effect via pseudo-element (opt-in) */
+.card--gradient {
+  position: relative;
+  border: none;
+}
+
+.card--gradient::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.4),
+    rgba(16, 185, 129, 0.25),
+    rgba(147, 51, 234, 0.3)
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ── Utility: .hidden ────────────────────────────────────────── */
+.hidden {
+  display: none !important;
+}
+
+/* ── Utility: .sr-only (Screen-reader only) ──────────────────── */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

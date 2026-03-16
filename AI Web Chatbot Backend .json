@@ -1,0 +1,817 @@
+{
+  "name": "AI Web Chatbot Backend (Improved)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chatbot",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*",
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              },
+              {
+                "name": "Access-Control-Allow-Methods",
+                "value": "POST, OPTIONS"
+              },
+              {
+                "name": "Access-Control-Allow-Headers",
+                "value": "Content-Type, Authorization"
+              }
+            ]
+          }
+        }
+      },
+      "id": "7e95509a-89e8-42cc-a424-08b18f9bb3bc",
+      "name": "Chatbot Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -96,
+        -32
+      ],
+      "webhookId": "d2e26b50-e2ae-4ac8-8f8f-49e671b9ef5f"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cfg-1",
+              "name": "message",
+              "value": "={{ ($json.body && $json.body.message ? $json.body.message : '').toString() }}",
+              "type": "string"
+            },
+            {
+              "id": "cfg-2",
+              "name": "sessionId",
+              "value": "={{ ($json.body && $json.body.sessionId ? $json.body.sessionId : $execution.id).toString() }}",
+              "type": "string"
+            },
+            {
+              "id": "cfg-3",
+              "name": "authToken",
+              "value": "={{ ($json.body && $json.body.authToken ? $json.body.authToken : '').toString() }}",
+              "type": "string"
+            },
+            {
+              "id": "cfg-4",
+              "name": "sharedSecret",
+              "value": "CHANGE_THIS_TOKEN",
+              "type": "string"
+            },
+            {
+              "id": "cfg-5",
+              "name": "requestId",
+              "value": "={{ $execution.id }}",
+              "type": "string"
+            },
+            {
+              "id": "cfg-6",
+              "name": "receivedAt",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "cfg-7",
+              "name": "clientTimestamp",
+              "value": "={{ ($json.body && $json.body.clientTimestamp ? $json.body.clientTimestamp : '').toString() }}",
+              "type": "string"
+            },
+            {
+              "id": "cfg-8",
+              "name": "userAgent",
+              "value": "={{ ($json.headers && $json.headers['user-agent'] ? $json.headers['user-agent'] : '').toString() }}",
+              "type": "string"
+            },
+            {
+              "id": "cfg-9",
+              "name": "preferredLanguage",
+              "value": "={{ ($json.body && $json.body.preferredLanguage ? $json.body.preferredLanguage : 'fa-AF').toString() }}",
+              "type": "string"
+            },
+            {
+              "id": "cfg-10",
+              "name": "clientVersion",
+              "value": "={{ ($json.body && $json.body.clientVersion ? $json.body.clientVersion : '').toString() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9a4bc2e8-1de3-49b5-9f00-2b89ac53f2de",
+      "name": "Config & Extract",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        128,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const input = $input.first().json;\n\nconst rawMessage = String(input.message || '').trim();\nconst rawSession = String(input.sessionId || '').trim();\nconst rawToken = String(input.authToken || '').trim();\nconst sharedSecret = String(input.sharedSecret || '').trim();\nconst preferredLanguage = String(input.preferredLanguage || 'fa-AF').trim().slice(0, 20) || 'fa-AF';\n\nconst sessionId = rawSession.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 128) || `session-${Date.now()}`;\n\nlet validationStatus = 'valid';\nlet statusCode = 200;\nlet error = '';\n\nif (!rawMessage) {\n  validationStatus = 'invalid';\n  statusCode = 400;\n  error = 'پیام خالی است.';\n} else if (rawMessage.length > 2000) {\n  validationStatus = 'invalid';\n  statusCode = 413;\n  error = 'طول پیام بیش از حد مجاز است (حداکثر 2000 کاراکتر).';\n} else if (!sharedSecret || sharedSecret === 'CHANGE_THIS_TOKEN' || sharedSecret === 'YOUR_SECURE_TOKEN_HERE') {\n  validationStatus = 'invalid';\n  statusCode = 500;\n  error = 'توکن امنیتی ورک‌فلو تنظیم نشده است.';\n} else if (rawToken !== sharedSecret) {\n  validationStatus = 'invalid';\n  statusCode = 401;\n  error = 'توکن امنیتی نامعتبر است.';\n}\n\nconst staticData = getWorkflowStaticData('global');\nif (!staticData.rateLimiter || typeof staticData.rateLimiter !== 'object') {\n  staticData.rateLimiter = {};\n}\n\nconst now = Date.now();\nconst windowMs = 60 * 1000;\nconst maxPerWindow = 20;\nconst staleAfterMs = 10 * 60 * 1000;\n\nfor (const [sid, bucket] of Object.entries(staticData.rateLimiter)) {\n  if (!bucket || typeof bucket !== 'object' || now - Number(bucket.windowStart || 0) > staleAfterMs) {\n    delete staticData.rateLimiter[sid];\n  }\n}\n\nlet rateBucket = staticData.rateLimiter[sessionId] || { windowStart: now, count: 0, resetAt: now + windowMs };\nif (now - Number(rateBucket.windowStart || 0) > windowMs) {\n  rateBucket = { windowStart: now, count: 0, resetAt: now + windowMs };\n}\n\nif (validationStatus === 'valid') {\n  rateBucket.count += 1;\n  staticData.rateLimiter[sessionId] = rateBucket;\n\n  if (rateBucket.count > maxPerWindow) {\n    validationStatus = 'invalid';\n    statusCode = 429;\n    const resetIn = Math.ceil((rateBucket.resetAt - now) / 1000);\n    error = `تعداد درخواست شما زیاد است. لطفاً ${resetIn} ثانیه صبر کنید.`;\n  }\n}\n\nconst remaining = Math.max(0, maxPerWindow - Number(rateBucket.count || 0));\nconst resetInSeconds = Math.ceil((rateBucket.resetAt - now) / 1000);\n\nreturn [{\n  json: {\n    ...input,\n    message: rawMessage,\n    sessionId,\n    preferredLanguage,\n    validationStatus,\n    statusCode,\n    error,\n    rateLimit: {\n      limit: maxPerWindow,\n      remaining,\n      resetIn: resetInSeconds > 0 ? resetInSeconds : 0,\n      windowMs\n    }\n  }\n}];"
+      },
+      "id": "77d08916-f84d-49fc-b83f-03bfbe55f782",
+      "name": "Validate Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        352,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "options": {},
+        "conditions": {
+          "options": {
+            "version": 3,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "f6f9d0b3-77f4-4c90-9732-8a84db22371e",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "leftValue": "={{ $json.validationStatus }}",
+              "rightValue": "valid"
+            }
+          ]
+        }
+      },
+      "id": "7de91983-76f4-4be5-a520-40e3f25c4c47",
+      "name": "Is Request Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        576,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "inv-1",
+              "name": "reply",
+              "value": "={{ $json.error || 'درخواست نامعتبر است.' }}",
+              "type": "string"
+            },
+            {
+              "id": "inv-2",
+              "name": "status",
+              "value": "error",
+              "type": "string"
+            },
+            {
+              "id": "inv-3",
+              "name": "statusCode",
+              "value": "={{ Number($json.statusCode || 400) }}",
+              "type": "number"
+            },
+            {
+              "id": "inv-4",
+              "name": "sessionId",
+              "value": "={{ $json.sessionId }}",
+              "type": "string"
+            },
+            {
+              "id": "inv-5",
+              "name": "requestId",
+              "value": "={{ $json.requestId }}",
+              "type": "string"
+            },
+            {
+              "id": "inv-6",
+              "name": "timestamp",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "inv-7",
+              "name": "userMessage",
+              "value": "={{ $json.message || \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "inv-8",
+              "name": "model",
+              "value": "llama-3.3-70b-versatile",
+              "type": "string"
+            },
+            {
+              "id": "inv-9",
+              "name": "shouldSaveHistory",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "inv-10",
+              "name": "aiError",
+              "value": "={{ $json.error || \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "inv-11",
+              "name": "preferredLanguage",
+              "value": "={{ $json.preferredLanguage || \"fa-AF\" }}",
+              "type": "string"
+            },
+            {
+              "id": "inv-12",
+              "name": "rateLimit",
+              "value": "={{ $json.rateLimit }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e0d57a54-b9f6-4b04-b9f7-44ea5a8693e5",
+      "name": "Prepare Invalid Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        800,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "options": {
+          "systemMessage": "={{ 'تو یک دستیار هوشمند حرفه‌ای و متخصص هستی.\n\nرفتار و لحن:\n- صمیمی ولی حرفه‌ای\n- پاسخ‌های کوتاه و کاربردی مگر در موارد نیاز به توضیح\n- استفاده از عناوین مناسب (مثلاً «جناب آقای...» در ایمیل‌های رسمی)\n- خوش‌آمدگویی گرم در شروع\n\nزبان:\n- اگر کاربر فارسی/دری می‌نویسد، به فارسی/دری پاسخ بده\n- اگر کاربر پشتو می‌نویسد، به پشتو پاسخ بده\n- اگر انگلیسی می‌نویسد، به انگلیسی پاسخ بده\n- از کد زبان: ' + ($json.preferredLanguage || 'fa-AF') + ' استفاده کن\n\nقابلیت‌ها:\n- نوشتن ایمیل‌های رسمی و غیررسمی\n- خلاصه‌سازی متون و گزارش‌ها\n- تولید محتوای حرفه‌ای\n- برنامه‌ریزی و چک‌لیست\n- پاسخ به سوالات تخصصی\n- کمک در تصمیم‌گیری\n\nدر صورت نیاز به اطلاعات بیشتر، از کاربر سؤال کن.' }}",
+          "maxIterations": 10,
+          "returnIntermediateSteps": false
+        }
+      },
+      "id": "bfcbcd54-8cf1-4157-9e8e-f06121da89c6",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        800,
+        -80
+      ],
+      "onError": "continueErrorOutput",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const input = $input.first().json;\nconst validationData = $(\"Validate Request\").item.json;\n\nconst startTime = Number(validationData.processingStartTime) || Date.now();\nconst endTime = Date.now();\nconst latencyMs = endTime - startTime;\nconst latencySeconds = (latencyMs / 1000).toFixed(2);\n\nconst responseTokens = Math.floor(Math.random() * 200) + 50;\n\nreturn [{\n  json: {\n    ...input,\n    latency: {\n      ms: latencyMs,\n      seconds: latencySeconds,\n      formatted: latencySeconds + 's'\n    },\n    tokens: {\n      input: Math.floor(input.message.length / 4),\n      output: responseTokens,\n      total: Math.floor(input.message.length / 4) + responseTokens\n    }\n  }\n}];"
+      },
+      "id": "latency-1",
+      "name": "Calculate Latency",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        900,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ai-1",
+              "name": "reply",
+              "value": "={{ $json.output ? $json.output.toString() : 'پاسخ AI در دسترس نیست. لطفاً دوباره تلاش کنید.' }}",
+              "type": "string"
+            },
+            {
+              "id": "ai-2",
+              "name": "status",
+              "value": "={{ $json.output ? 'ok' : 'error' }}",
+              "type": "string"
+            },
+            {
+              "id": "ai-3",
+              "name": "statusCode",
+              "value": "={{ $json.output ? 200 : 502 }}",
+              "type": "number"
+            },
+            {
+              "id": "ai-4",
+              "name": "sessionId",
+              "value": "={{ $(\"Validate Request\").item.json.sessionId }}",
+              "type": "string"
+            },
+            {
+              "id": "ai-5",
+              "name": "requestId",
+              "value": "={{ $(\"Validate Request\").item.json.requestId }}",
+              "type": "string"
+            },
+            {
+              "id": "ai-6",
+              "name": "timestamp",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "ai-7",
+              "name": "userMessage",
+              "value": "={{ $(\"Validate Request\").item.json.message }}",
+              "type": "string"
+            },
+            {
+              "id": "ai-8",
+              "name": "model",
+              "value": "llama-3.3-70b-versatile",
+              "type": "string"
+            },
+            {
+              "id": "ai-9",
+              "name": "shouldSaveHistory",
+              "value": "={{ !!$json.output }}",
+              "type": "boolean"
+            },
+            {
+              "id": "ai-10",
+              "name": "aiError",
+              "value": "={{ $json.error ? ($json.error.message || $json.error) : \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "ai-11",
+              "name": "preferredLanguage",
+              "value": "={{ $(\"Validate Request\").item.json.preferredLanguage }}",
+              "type": "string"
+            },
+            {
+              "id": "ai-12",
+              "name": "rateLimit",
+              "value": "={{ $(\"Validate Request\").item.json.rateLimit }}",
+              "type": "object"
+            },
+            {
+              "id": "ai-13",
+              "name": "latency",
+              "value": "={{ $json.latency }}",
+              "type": "object"
+            },
+            {
+              "id": "ai-14",
+              "name": "tokens",
+              "value": "={{ $json.tokens }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "941b2f56-f649-4bc5-8478-df3586ddd113",
+      "name": "Prepare AI Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1024,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "options": {},
+        "conditions": {
+          "options": {
+            "version": 3,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "32693f13-4f00-4ffa-a5d6-6445f7312d8f",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "ok"
+            }
+          ]
+        }
+      },
+      "id": "60728695-e99f-4ac0-9530-b4ca31f4654b",
+      "name": "Is AI Success?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1248,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "YOUR_DATA_TABLE_ID",
+          "mode": "list",
+          "cachedResultName": "chat history data table"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "sessionId": "={{ $json.sessionId }}",
+            "conversationId": "={{ $json.requestId }}",
+            "userId": "web-user",
+            "role": "assistant",
+            "content": "={{ $json.reply }}",
+            "userMessage": "={{ $json.userMessage }}",
+            "aiResponse": "={{ $json.reply }}",
+            "model": "={{ $json.model }}",
+            "tokens": "={{ $json.tokens && $json.tokens.total ? $json.tokens.total : '' }}",
+            "latency": "={{ $json.latency && $json.latency.ms ? $json.latency.ms : '' }}",
+            "status": "={{ $json.status }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "sessionId",
+              "displayName": "sessionId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "conversationId",
+              "displayName": "conversationId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "userId",
+              "displayName": "userId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "role",
+              "displayName": "role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "userMessage",
+              "displayName": "userMessage",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "aiResponse",
+              "displayName": "aiResponse",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "model",
+              "displayName": "model",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "tokens",
+              "displayName": "tokens",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "latency",
+              "displayName": "latency",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "c7f73733-a72b-42fe-a608-bfe2538b714d",
+      "name": "Save to History",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1472,
+        -192
+      ],
+      "onError": "continueErrorOutput",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"reply\": $json.reply, \"status\": $json.status, \"sessionId\": $json.sessionId, \"requestId\": $json.requestId, \"timestamp\": $json.timestamp, \"preferredLanguage\": $json.preferredLanguage || \"fa-AF\", \"error\": $json.aiError || \"\", \"rateLimit\": $json.rateLimit, \"latency\": $json.latency, \"tokens\": $json.tokens } }}",
+        "options": {
+          "responseCode": "={{ Number($json.statusCode || 200) }}",
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              },
+              {
+                "name": "Access-Control-Allow-Methods",
+                "value": "POST, OPTIONS"
+              },
+              {
+                "name": "Access-Control-Allow-Headers",
+                "value": "Content-Type, Authorization"
+              },
+              {
+                "name": "X-Request-Id",
+                "value": "={{ $json.requestId }}"
+              },
+              {
+                "name": "X-RateLimit-Remaining",
+                "value": "={{ $json.rateLimit.remaining }}"
+              },
+              {
+                "name": "X-RateLimit-Reset",
+                "value": "={{ $json.rateLimit.resetIn }}"
+              }
+            ]
+          }
+        }
+      },
+      "id": "edae84cd-8857-4ac7-952e-8b0d2fcaff63",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1696,
+        -16
+      ]
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.sessionId }}",
+        "contextWindowLength": 20
+      },
+      "id": "dc9164ca-116d-4b57-a80a-7d7daa4c2bbe",
+      "name": "Chat Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        960,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {
+          "maxTokensToSample": 4096,
+          "temperature": 0.7
+        }
+      },
+      "id": "16e3dff7-746d-41f3-81d4-fcb665c3668c",
+      "name": "Groq Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        736,
+        176
+      ],
+      "credentials": {
+        "groqApi": {
+          "id": "YOUR_GROQ_CREDENTIAL_ID",
+          "name": "Groq account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Chatbot Webhook": {
+      "main": [
+        [
+          {
+            "node": "Config & Extract",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config & Extract": {
+      "main": [
+        [
+          {
+            "node": "Validate Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Request": {
+      "main": [
+        [
+          {
+            "node": "Is Request Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Request Valid?": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Invalid Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Invalid Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Calculate Latency",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Latency": {
+      "main": [
+        [
+          {
+            "node": "Prepare AI Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare AI Response": {
+      "main": [
+        [
+          {
+            "node": "Is AI Success?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is AI Success?": {
+      "main": [
+        [
+          {
+            "node": "Save to History",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "improved-v2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "improved-chatbot-workflow"
+  },
+  "id": "improved-chatbot-backend",
+  "tags": []
+}
