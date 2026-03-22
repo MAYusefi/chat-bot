@@ -403,12 +403,7 @@
   }
 
   function applySettingsToForm(settings) {
-    if (elements.webhookUrlInput) {
-      elements.webhookUrlInput.value = settings.webhookUrl || "";
-    }
-    if (elements.authTokenInput) {
-      elements.authTokenInput.value = settings.authToken || "";
-    }
+    // webhookUrl and authToken are locked — not shown in form
     if (elements.botNameInput) {
       elements.botNameInput.value = settings.botName || DEFAULT_SETTINGS.botName;
     }
@@ -437,8 +432,6 @@
   function saveSettings(event) {
     event.preventDefault();
 
-    const webhookUrl = (elements.webhookUrlInput ? elements.webhookUrlInput.value : "").trim();
-    const authToken = (elements.authTokenInput ? elements.authTokenInput.value : "").trim();
     const botName = (elements.botNameInput ? elements.botNameInput.value : "").trim();
     const preferredLanguage = elements.languageInput
       ? elements.languageInput.value
@@ -447,28 +440,10 @@
       elements.timeoutInput ? elements.timeoutInput.value : DEFAULT_SETTINGS.timeoutMs
     );
 
-    if (!webhookUrl) {
-      ChatUI.showToast(elements.toastContainer, "آدرس وبهوک الزامی است.", "warning");
-      return;
-    }
-
-    if (!isValidWebhookUrl(webhookUrl)) {
-      ChatUI.showToast(
-        elements.toastContainer,
-        TEXTS.invalidWebhookUrl || "آدرس وبهوک معتبر نیست.",
-        "warning"
-      );
-      return;
-    }
-
-    if (!authToken) {
-      ChatUI.showToast(elements.toastContainer, "توکن امنیتی الزامی است.", "warning");
-      return;
-    }
-
+    // webhookUrl and authToken are always locked to config defaults — not user-editable
     state.settings = {
-      webhookUrl,
-      authToken,
+      webhookUrl: DEFAULT_SETTINGS.webhookUrl,
+      authToken: DEFAULT_SETTINGS.authToken,
       botName: botName || DEFAULT_SETTINGS.botName,
       timeoutMs,
       preferredLanguage: preferredLanguage || DEFAULT_SETTINGS.preferredLanguage
