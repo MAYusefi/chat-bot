@@ -82,11 +82,11 @@
 
     return {
       webhookUrl:
-        typeof stored.webhookUrl === "string"
+        (typeof stored.webhookUrl === "string" && stored.webhookUrl.trim())
           ? stored.webhookUrl
           : defaults.webhookUrl,
       authToken:
-        typeof stored.authToken === "string"
+        (typeof stored.authToken === "string" && stored.authToken.trim())
           ? stored.authToken
           : defaults.authToken,
       botName:
