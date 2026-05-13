@@ -95,13 +95,19 @@
 
 .brand-block h1 {
   margin: 0 0 8px;
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 700;
   line-height: 1.3;
+  letter-spacing: -0.3px;
   background: linear-gradient(135deg, var(--primary), var(--accent));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+.brand-block .muted {
+  font-size: 13px;
+  line-height: 1.6;
 }
 
 /* ----------------------------------------------------------
@@ -307,6 +313,13 @@
 .chat-header h2 {
   margin: 0 0 4px;
   font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+}
+
+.chat-header .status-line {
+  font-size: 13px;
+  line-height: 1.5;
 }
 
 .chat-header-actions {
@@ -395,8 +408,9 @@ html[data-theme="light"] .composer {
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid var(--card-border);
   color: var(--text);
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.7;
+  font-family: inherit;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 

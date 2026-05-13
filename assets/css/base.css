@@ -1,10 +1,8 @@
 /* ═══════════════════════════════════════════════════════════════
    base.css — Professional Glassmorphism Chatbot UI
    Language: RTL (Persian / Dari)
+   Font: Vazirmatn is loaded via HTML <link> for fastest rendering
    ═══════════════════════════════════════════════════════════════ */
-
-/* ── Google Fonts ────────────────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
 /* ── Dark Theme (default) ────────────────────────────────────── */
 :root {
@@ -108,9 +106,11 @@ body {
 
 /* ── Body ────────────────────────────────────────────────────── */
 body {
-  font-family: 'Vazirmatn', 'Segoe UI', 'Inter', Tahoma, sans-serif;
-  font-size: 14px;
-  line-height: 1.6;
+  font-family: 'Vazirmatn', 'IRANSans', 'Tahoma', 'Segoe UI', 'Arial', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.7;
+  letter-spacing: 0;
   color: var(--text);
   background:
     radial-gradient(ellipse at 12% 8%,  rgba(0, 212, 255, 0.18), transparent 28%),
@@ -129,7 +129,8 @@ button,
 input,
 textarea,
 select {
-  font: inherit;
+  font-family: inherit;
+  font-size: inherit;
   color: inherit;
   letter-spacing: inherit;
 }
@@ -240,7 +241,7 @@ html[data-theme='light'] ::-moz-selection {
   margin: 0;
 }
 
-/* ── Utility: .card (Glass Effect) ───────────────────────────── */
+/* ── Utility: .card (Glass Effect) ───────────���───────────────── */
 .card {
   background: var(--card);
   border: 1px solid var(--card-border);
